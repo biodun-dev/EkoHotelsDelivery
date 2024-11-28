@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import crashlytics from '@react-native-firebase/crashlytics';
 // import firebase from "react-native-firebase";
 import messaging from '@react-native-firebase/messaging';
+import { firebase } from '@react-native-firebase/app';
 import I18n from 'i18n-js';
 import React from "react";
 import { AppState, Linking, LogBox, Platform, StatusBar, Text, TextInput, View } from 'react-native';
@@ -33,7 +34,7 @@ import {
     DINE_TYPE,
 
     EVENT_TYPE, NOTIFICATION_TYPE,
-
+  
     ORDER_TYPE
 } from "./app/utils/EDConstants";
 import NavigationService from "./NavigationService.js";
@@ -67,6 +68,10 @@ setNativeExceptionHandler(exceptionString => {
     crashlytics().recordError(exceptionString)
 });
 
+
+if (!firebase.apps.length) {
+    firebase.initializeApp();
+  }
 export default class App extends React.Component {
     constructor(props) {
         super(props);

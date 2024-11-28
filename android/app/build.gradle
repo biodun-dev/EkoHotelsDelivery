@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+apply plugin: 'com.google.gms.google-services' // Firebase plugin
 
 // React Native Gradle Plugin Configuration
 react {
@@ -30,6 +31,9 @@ android {
 
         // Resolve variant ambiguity for react-native-camera
         missingDimensionStrategy 'react-native-camera', 'general' // or 'mlkit'
+
+        // Required for Firebase notifications to work
+        multiDexEnabled true
     }
 
     // Signing Configuration
@@ -40,7 +44,7 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-           release {
+        release {
             storeFile file('release-key.jks')
             storePassword 'android'
             keyAlias 'release-key'
@@ -54,8 +58,8 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.debug
-            //  signingConfig signingConfigs.release
+            signingConfig signingConfigs.release // Use the release signing config
+             //  signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
@@ -73,6 +77,17 @@ dependencies {
         implementation jscFlavor
     }
 
-    // react-native-camera
+    // react-native-camera (if still in use)
     implementation project(':react-native-camera')
+
+    // Firebase BOM (manages versions of all Firebase dependencies)
+    implementation platform('com.google.firebase:firebase-bom:32.0.0')
+
+    // Firebase Modules
+    implementation 'com.google.firebase:firebase-messaging' // For Firebase Cloud Messaging
+    implementation 'com.google.firebase:firebase-crashlytics' // For Crashlytics
+    implementation 'com.google.firebase:firebase-analytics' // Optional: For Analytics
+
+    // For multiDex support
+    implementation 'androidx.multidex:multidex:2.0.1'
 }
