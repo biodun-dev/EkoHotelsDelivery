@@ -52,7 +52,7 @@ import { heightPercentageToDP } from "react-native-responsive-screen";
 import EDDatePicker from "../components/EDDatePicker";
 import EDTimePicker from "../components/EDTimePicker";
 import RadioGroupWithHeader from "../components/RadioGroupWithHeader";
-import { Dropdown } from "react-native-element-dropdown";
+import { Dropdown } from "react-native-material-dropdown-v2-fixed";
 import moment from "moment";
 import { EDOperationHours } from "../components/EDOperatingHours";
 import * as RNLocalize from "react-native-localize";

@@ -1,7 +1,5 @@
-import I18n from "i18n-js";
 import { Spinner } from "native-base";
 import React from "react";
-import NavigationService from "../../NavigationService";
 import {
   AppState,
   Linking,
@@ -13,16 +11,16 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { RNCamera } from "react-native-camera";
 import deviceInfoModule from "react-native-device-info";
 import { Icon } from "react-native-elements";
 import { PERMISSIONS, RESULTS } from "react-native-permissions";
-import QRCodeScanner from "react-native-qrcode-scanner";
 import RNRestart from "react-native-restart";
 import { NavigationEvents } from "react-navigation";
 import { connect } from "react-redux";
+import NavigationService from "../../NavigationService.js";
 import Assets from "../assets";
 import BannerImages from "../components/BannerImages";
+import EDButton from "../components/EDButton";
 import EDHomeSearchBar from "../components/EDHomeSearchBar";
 import EDLanguageSelect from "../components/EDLanguageSelect";
 import EDLocationModel from "../components/EDLocationModel";
@@ -32,7 +30,6 @@ import EDResCategoryFlatList from "../components/EDResCategoryFlatList";
 import EDRestaurantDeatilsFlatList from "../components/EDRestaurantDetailsFlatList";
 import EDRTLText from "../components/EDRTLText";
 import EDRTLView from "../components/EDRTLView";
-import RadioGroupWithHeader from "../components/RadioGroupWithHeader";
 import { strings } from "../locales/i18n";
 import {
   saveCartCount,
@@ -68,12 +65,10 @@ import {
   debugLog,
   getProportionalFontSize,
   GOOGLE_API_KEY,
-  isRTLCheck,
-  RESPONSE_SUCCESS,
+  RESPONSE_SUCCESS
 } from "../utils/EDConstants";
 import { EDFonts } from "../utils/EDFontConstants";
 import { checkFirebasePermission } from "../utils/FirebaseServices";
-import EDButton from "../components/EDButton";
 import {
   getAddress,
   getCurrentLocation,
@@ -86,15 +81,13 @@ import {
   requestPermission,
 } from "../utils/PermissionServices";
 import {
-  addRequestQR,
   changeToken,
   getAddressListAPI,
   getFoodType,
   homedata,
-  saveUserLanguageinDB,
+  saveUserLanguageinDB
 } from "../utils/ServiceManager";
 import BaseContainer from "./BaseContainer";
-import LaundryButton from "./LaundaryButton";
 
 class MainContainer extends React.Component {
   distance = "";

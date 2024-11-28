@@ -1,15 +1,13 @@
 import React from "react";
-import { Platform } from "react-native";
-import { BackHandler, Image, StyleSheet, Text, View } from "react-native";
+import { BackHandler, Image, Platform, StyleSheet, Text, View } from "react-native";
 import { Icon } from "react-native-elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import { initialWindowMetrics } from "react-native-safe-area-context";
 import { NavigationActions, NavigationEvents, StackActions } from "react-navigation";
 import { connect } from "react-redux";
-import NavigationService from "../../NavigationService";
+import NavigationService from "../../NavigationService.js";
 import Assets from "../assets";
-import EDProfilePicture from '../components/EDProfilePicture';
 import EDRTLText from "../components/EDRTLText";
 import EDRTLTextInput from '../components/EDRTLTextInput';
 import EDRTLView from "../components/EDRTLView";

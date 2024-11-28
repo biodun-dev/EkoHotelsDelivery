@@ -1,24 +1,39 @@
+import {
+  GoogleSignin,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
 import React from "react";
 import {
+  BackHandler,
   Image,
-  ImageBackground,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  Platform,
-  BackHandler,
-  ScrollView,
+  View
 } from "react-native";
+import CardFlip from "react-native-card-flip/CardFlip";
 import { Icon } from "react-native-elements";
+import {
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+  LoginManager,
+} from "react-native-fbsdk-next";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import {
+  heightPercentageToDP
+} from "react-native-responsive-screen";
+import { initialWindowMetrics } from "react-native-safe-area-context";
 import {
   NavigationActions,
   NavigationEvents,
   StackActions,
 } from "react-navigation";
 import { connect } from "react-redux";
+import NavigationService from "../../NavigationService.js";
 import Assets from "../assets";
+import EDCopyPasswordDialogue from "../components/EDCopyPasswordDialogue";
 import EDForgotPassword from "../components/EDForgotPassword";
 import EDPopupView from "../components/EDPopupView";
 import EDRTLText from "../components/EDRTLText";
@@ -26,64 +41,41 @@ import EDRTLTextInput from "../components/EDRTLTextInput";
 import EDRTLView from "../components/EDRTLView";
 import EDThemeButton from "../components/EDThemeButton";
 import EDUnderlineButton from "../components/EDUnderlineButton";
-import NavigationService from "../../NavigationService";
 import { strings } from "../locales/i18n";
+import { saveIsCheckoutScreen } from "../redux/actions/Checkout";
 import {
   rememberLoginInRedux,
-  saveLanguageInRedux,
-  saveUserDetailsInRedux,
-  saveUserFCMInRedux,
-  saveSocialLoginInRedux,
   saveAppleLogin,
   saveAppleToken,
+  saveLanguageInRedux,
+  saveSocialLoginInRedux,
+  saveUserDetailsInRedux,
+  saveUserFCMInRedux,
 } from "../redux/actions/User";
 import {
-  saveUserFCM,
-  saveUserLogin,
-  saveSocialLogin,
   saveAppleLoginAsync,
   saveAppleTokenAsync,
+  saveSocialLogin,
+  saveUserFCM,
+  saveUserLogin,
 } from "../utils/AsyncStorageHelper";
-import { showValidationAlert, showDialogue } from "../utils/EDAlert";
+import { showDialogue, showValidationAlert } from "../utils/EDAlert";
 import { EDColors } from "../utils/EDColors";
 import {
+  debugLog,
   getProportionalFontSize,
+  GOOGLE_WEBCLIENT_ID,
   isRTLCheck,
+  isVerificationRequired,
   RESPONSE_SUCCESS,
   TextFieldTypes,
-  debugLog,
-  isVerificationRequired,
-  GOOGLE_WEBCLIENT_ID,
 } from "../utils/EDConstants";
 import { EDFonts } from "../utils/EDFontConstants";
 import { checkFirebasePermission } from "../utils/FirebaseServices";
 import metrics from "../utils/metrics";
-import {
-  LoginManager,
-  GraphRequestManager,
-  GraphRequest,
-  AccessToken,
-} from "react-native-fbsdk-next";
 import { netStatus } from "../utils/NetworkStatusConnection";
 import { loginUser, socialAPI } from "../utils/ServiceManager";
 import Validations from "../utils/Validations";
-import { SocialIcon } from "react-native-elements";
-import {
-  heightPercentageToDP,
-  widthPercentageToDP,
-} from "react-native-responsive-screen";
-import { saveIsCheckoutScreen } from "../redux/actions/Checkout";
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
-import { SignInWithAppleButton } from "react-native-apple-authentication";
-import { SvgXml } from "react-native-svg";
-import { google_icon } from "../utils/EDSvgIcons";
-import Toast, { DURATION } from "react-native-easy-toast";
-import EDCopyPasswordDialogue from "../components/EDCopyPasswordDialogue";
-import { initialWindowMetrics } from "react-native-safe-area-context";
-import CardFlip from "react-native-card-flip/CardFlip";
 
 class LoginContainer extends React.Component {
   //#region LIFE CYCLE METHODS

@@ -2,6 +2,7 @@ import {
   GoogleSignin,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
+import I18n from "i18n-js";
 import React from "react";
 import {
   Animated,
@@ -12,14 +13,13 @@ import {
   View,
 } from "react-native";
 import { SignInWithAppleButton } from "react-native-apple-authentication";
-import { Icon } from "react-native-elements";
 import {
   AccessToken,
   GraphRequest,
   GraphRequestManager,
   LoginManager,
 } from "react-native-fbsdk-next";
-import I18n from "i18n-js";
+import * as RNFS from "react-native-fs";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import { SvgXml } from "react-native-svg";
 import {
@@ -28,7 +28,8 @@ import {
   StackActions,
 } from "react-navigation";
 import { connect } from "react-redux";
-import NavigationService from "../../NavigationService";
+import XLSX from "xlsx";
+import NavigationService from "../../NavigationService.js";
 import Assets from "../assets";
 import EDRTLView from "../components/EDRTLView";
 import EDTextView from "../components/EDTextView";
@@ -76,14 +77,13 @@ import { EDColors } from "../utils/EDColors";
 import {
   debugLog,
   DEFAULT_TYPE,
-  DINE_TYPE,
   EVENT_TYPE,
   getProportionalFontSize,
   GOOGLE_WEBCLIENT_ID,
   isRTLCheck,
   NOTIFICATION_TYPE,
   ORDER_TYPE,
-  RESPONSE_SUCCESS,
+  RESPONSE_SUCCESS
 } from "../utils/EDConstants";
 import { EDFonts } from "../utils/EDFontConstants";
 import { google_icon } from "../utils/EDSvgIcons";
@@ -98,9 +98,6 @@ import {
   getLanguageList,
   socialAPI,
 } from "../utils/ServiceManager";
-import XLSX from "xlsx";
-import * as RNFS from "react-native-fs";
-import { Alert } from "react-native";
 var redirectType = "";
 
 class SplashContainer extends React.Component {

@@ -36,7 +36,7 @@ import {
 
     ORDER_TYPE
 } from "./app/utils/EDConstants";
-import NavigationService from "./NavigationService";
+import NavigationService from "./NavigationService.js";
 const rootReducer = combineReducers({
     userOperations: userOperations,
     navigationReducer: navigationOperation,

@@ -1,30 +1,29 @@
+import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Icon } from 'react-native-elements';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 import { connect } from 'react-redux';
+import NavigationService from "../../NavigationService.js";
+import EDText from '../components/EDText';
 import EDThemeButton from '../components/EDThemeButton';
 import { strings } from '../locales/i18n';
 import { EDColors } from '../utils/EDColors';
-import { isRTLCheck, getProportionalFontSize, RESPONSE_SUCCESS, debugLog } from '../utils/EDConstants';
-import metrics from '../utils/metrics';
+import { getProportionalFontSize, isRTLCheck, RESPONSE_SUCCESS } from '../utils/EDConstants';
 import { EDFonts } from "../utils/EDFontConstants";
-import { Icon } from 'react-native-elements'
-import EDText from '../components/EDText';
-import OTPInputView from '@twotalltotems/react-native-otp-input'
-import NavigationService from "../../NavigationService";
-import { heightPercentageToDP } from 'react-native-responsive-screen';
+import metrics from '../utils/metrics';
 import { resendOTPAPI, verifyOTPAPI } from "../utils/ServiceManager";
 // import { LoginManager, GraphRequestManager, GraphRequest, AccessToken } from "react-native-fbsdk";
-import { showNoInternetAlert, showValidationAlert } from "../utils/EDAlert";
 import { NavigationActions, StackActions } from "react-navigation";
-import { saveSocialLoginInRedux, saveLanguageInRedux, saveUserDetailsInRedux, saveUserFCMInRedux, rememberLoginInRedux, saveSocialButtonInRedux } from "../redux/actions/User";
-import { saveUserFCM, saveUserLogin, saveSocialLogin } from "../utils/AsyncStorageHelper";
-import { saveIsCheckoutScreen } from '../redux/actions/Checkout'
-import { netStatus } from "../utils/NetworkStatusConnection";
-import ProgressLoader from '../components/ProgressLoader'
-import { checkFirebasePermission } from "../utils/FirebaseServices";
-import EDUnderlineButton from '../components/EDUnderlineButton';
-import EDRTLView from '../components/EDRTLView';
 import EDRTLText from '../components/EDRTLText';
+import EDRTLView from '../components/EDRTLView';
+import ProgressLoader from '../components/ProgressLoader';
+import { saveIsCheckoutScreen } from '../redux/actions/Checkout';
+import { saveLanguageInRedux, saveSocialLoginInRedux, saveUserDetailsInRedux, saveUserFCMInRedux } from "../redux/actions/User";
+import { saveSocialLogin, saveUserFCM, saveUserLogin } from "../utils/AsyncStorageHelper";
+import { showNoInternetAlert, showValidationAlert } from "../utils/EDAlert";
+import { checkFirebasePermission } from "../utils/FirebaseServices";
+import { netStatus } from "../utils/NetworkStatusConnection";
 
 class OTPVerification extends React.PureComponent {
 

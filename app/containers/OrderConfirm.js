@@ -1,19 +1,18 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
-import BaseContainer from "./BaseContainer";
-import Assets from "../assets";
-import EDThemeButton from "../components/EDThemeButton";
-import { connect } from "react-redux";
-import { saveCartCount } from "../redux/actions/Checkout";
-import { getProportionalFontSize, isRTLCheck } from "../utils/EDConstants";
-import NavigationService from "../../NavigationService";
-import { strings } from "../locales/i18n";
-import { EDFonts } from "../utils/EDFontConstants";
-import Icon from 'react-native-vector-icons/FontAwesome'
-import { EDColors } from "../utils/EDColors";
-import metrics from "../utils/metrics";
+import { Image, StyleSheet, Text, View } from "react-native";
 import { heightPercentageToDP } from "react-native-responsive-screen";
 import { initialWindowMetrics } from "react-native-safe-area-context";
+import { connect } from "react-redux";
+import NavigationService from "../../NavigationService.js";
+import Assets from "../assets";
+import EDThemeButton from "../components/EDThemeButton";
+import { strings } from "../locales/i18n";
+import { saveCartCount } from "../redux/actions/Checkout";
+import { EDColors } from "../utils/EDColors";
+import { getProportionalFontSize, isRTLCheck } from "../utils/EDConstants";
+import { EDFonts } from "../utils/EDFontConstants";
+import metrics from "../utils/metrics";
+import BaseContainer from "./BaseContainer";
 
 
 class OrderConfirm extends React.PureComponent {

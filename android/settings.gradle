@@ -1,6 +1,26 @@
-pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
-plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+// Include the React Native Gradle plugin for autolinking libraries
+pluginManagement {
+    includeBuild("../node_modules/@react-native/gradle-plugin")
+}
+
+plugins {
+    id("com.facebook.react.settings")
+}
+
+// Configure React Native settings
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+    ex.autolinkLibrariesFromCommand()
+}
+
+// Set the root project name
 rootProject.name = 'EkoHotelsDelivery'
+
+// Include the app module
 include ':app'
+
+// Include the React Native Gradle plugin for other dependencies
 includeBuild('../node_modules/@react-native/gradle-plugin')
+
+// Include react-native-camera module and resolve variant ambiguity
+include ':react-native-camera'
+project(':react-native-camera').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-camera/android')
