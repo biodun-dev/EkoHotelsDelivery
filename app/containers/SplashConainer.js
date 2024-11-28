@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { SignInWithAppleButton } from "react-native-apple-authentication";
 import {
   AccessToken,
   GraphRequest,
@@ -658,16 +657,7 @@ class SplashContainer extends React.Component {
                     height={40}
                     onPress={this.onGoogleLogin}
                   />
-                  {Platform.OS == "ios" ? (
-                    <SignInWithAppleButton
-                      buttonStyle={{
-                        height: 60,
-                        width: 60,
-                        marginHorizontal: 20,
-                      }}
-                      callBack={this.onAppleSignIn}
-                    />
-                  ) : null}
+          
                   {/* <Icon
                                         name="facebook"
                                         containerStyle={{

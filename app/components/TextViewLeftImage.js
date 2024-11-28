@@ -20,10 +20,11 @@ export default class TextViewLeftImage extends React.PureComponent {
                     />
                     :
                     <Image
-                        style={style.image, this.props.imageStyle}
-                        source={this.props.image}
-                        resizeMode="contain"
-                    />}
+                    style={[style.image, this.props.imageStyle]} // Combine styles with an array
+                    source={this.props.image}
+                    resizeMode="contain"
+                />
+                }
                 <EDRTLText style={[style.text, this.props.textStyle]} numberOfLines={this.props.lines || 0} title={this.props.title} />
             </EDRTLView>
         );
