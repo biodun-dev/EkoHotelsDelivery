@@ -431,5 +431,3 @@ export const BASE_STACK_NAVIGATOR = createStackNavigator(
 );
 
 export const BASE_NAVIGATOR = createAppContainer(withNavigation(BASE_STACK_NAVIGATOR));
-
-console.log("BASE_NAVIGATOR exported successfully");

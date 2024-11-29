@@ -98,4 +98,6 @@ dependencies {
 
     // For multiDex support
     implementation 'androidx.multidex:multidex:2.0.1'
+
+     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 }
