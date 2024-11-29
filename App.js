@@ -1,10 +1,8 @@
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import crashlytics from '@react-native-firebase/crashlytics';
-// import firebase from "react-native-firebase";
 import messaging from '@react-native-firebase/messaging';
 import { firebase } from '@react-native-firebase/app';
-import I18n from 'i18n-js';
+import i18n from 'i18n-js';
 import React from "react";
 import { AppState, Linking, LogBox, Platform, StatusBar, Text, TextInput, View } from 'react-native';
 import deviceInfoModule from 'react-native-device-info';
@@ -28,7 +26,7 @@ import {
     DINE_TYPE,
 
     EVENT_TYPE, NOTIFICATION_TYPE,
-  
+
     ORDER_TYPE
 } from "./app/utils/EDConstants";
 import NavigationService from "./NavigationService.js";
@@ -41,21 +39,23 @@ const rootReducer = combineReducers({
 export const globalStore = createStore(rootReducer);
 
 
-
-// Handle JS exceptions
 const exceptionhandler = (error, isFatal) => {
-    if (error !== undefined && error.stack !== undefined) {
-        console.log("JS ERROR ::::", error)
-        showDialogue(strings("exceptionMsg"))
-        crashlytics().log(error.message)
-        crashlytics().recordError(error)
+    if (error && error.stack) {
+        console.error("JS ERROR ::::", error);
+        console.error("Stack Trace:", error.stack);
+
+        // Safely use strings
+        const errorMsg = i18n.translations ? strings("exceptionMsg") : "An error occurred";
+        showDialogue(errorMsg);
+
+        crashlytics().log(error.message);
+        crashlytics().recordError(error);
     }
-
-
 };
+
+
 setJSExceptionHandler(exceptionhandler, true);
 
-// Handle native exceptions
 setNativeExceptionHandler(exceptionString => {
     showDialogue(strings("exceptionMsg"))
     crashlytics().log(exceptionString)
@@ -65,7 +65,7 @@ setNativeExceptionHandler(exceptionString => {
 
 if (!firebase.apps.length) {
     firebase.initializeApp();
-  }
+}
 export default class App extends React.Component {
     constructor(props) {
         super(props);
@@ -106,10 +106,6 @@ export default class App extends React.Component {
     }
 
     async createNotificationListeners() {
-
-        //   /*
-        //    * Triggered when a particular notification has been received in foreground
-        //    * */
         messaging().onMessage(async remoteMessage => {
             let currentRoute = NavigationService.getCurrentRoute().routeName
             debugLog("CURRENT ROUTE ::::", NavigationService.getCurrentRoute())
@@ -163,9 +159,6 @@ export default class App extends React.Component {
             debugLog("Foreground message ::::::", remoteMessage)
         });
 
-        //   /*
-        //    * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
-        //    * */
         this.messageListener = messaging().onNotificationOpenedApp(remoteMessage => {
             let currentRoute = NavigationService.getCurrentRoute().routeName
             debugLog(
@@ -219,9 +212,6 @@ export default class App extends React.Component {
             }
         });
 
-        /*
-         * Triggered when a particular notification has been received in killed state
-         * */
 
         await messaging()
             .getInitialNotification()
@@ -278,75 +268,72 @@ export default class App extends React.Component {
         this.setState({ appState: nextAppState });
     }
 
-
-    /** //#region 
-     * GET LANGAGE FROM ASYNC AND SAVE IN REDUX
-     */
     async saveLanguage() {
         await getLanguage(
-            success => {
-                let lan = I18n.currentLocale()
-                if (success != null && success != undefined) {
-                    lan = success
-                    I18n.locale = success;
-                    setI18nConfig(lan)
+            async (success) => {
+                let lan = success;
+                if (lan) {
+                    i18n.locale = lan;
+                    await setI18nConfig(lan); // Ensure translations are set
                 } else {
-                    lan = "en"
-                    I18n.locale = "en";
-                    setI18nConfig("en")
-
+                    lan = "en";
+                    i18n.locale = "en";
+                    await setI18nConfig("en"); // Default to English
                 }
-            }, failure => {
-
+            },
+            (failure) => {
+                console.error("Error fetching saved language:", failure);
             }
-        )
+        );
     }
+    
     //#endregion
     componentWillUnmount() {
         AppState.removeEventListener('change', this._handleAppStateChange);
     }
 
     async componentDidMount() {
-        console.log('Initial isNotification:', this.isNotification);
-        AppState.addEventListener('change', this._handleAppStateChange);
-        await this.saveLanguage()
+        console.log("Initial isNotification:", this.isNotification);
+        AppState.addEventListener("change", this._handleAppStateChange);
+    
+        try {
+            // Ensure default language setup
+            await setI18nConfig();
+            console.log(`Locale initialized to: ${i18n.locale}`);
+        } catch (error) {
+            console.error("Error initializing i18n config:", error);
+        }
+    
         setTimeout(() => {
-            globalStore.dispatch(
-                savePromptStatus(false)
-            )
-        }, 2000)
+            globalStore.dispatch(savePromptStatus(false));
+        }, 2000);
+    
         this.createNotificationListeners();
-        if (Platform.OS === 'ios') {
+    
+        if (Platform.OS === "ios") {
             KeyboardManager.setEnable(true);
             KeyboardManager.setEnableDebugging(false);
             KeyboardManager.setKeyboardDistanceFromTextField(20);
             KeyboardManager.setEnableAutoToolbar(true);
-            KeyboardManager.setToolbarDoneBarButtonItemText('Done');
+            KeyboardManager.setToolbarDoneBarButtonItemText("Done");
             KeyboardManager.setToolbarPreviousNextButtonEnable(true);
             KeyboardManager.setShouldToolbarUsesTextFieldTintColor(true);
             KeyboardManager.setShouldShowToolbarPlaceholder(true);
             KeyboardManager.setOverrideKeyboardAppearance(true);
             KeyboardManager.setShouldResignOnTouchOutside(true);
         }
-
-        // Disable console print in release
-        if (!__DEV__)
-            console.log = () => null
-
-        // Disable yellowbox
-        LogBox.ignoreAllLogs()
-
-        // Check firebase permission
+    
+        if (!__DEV__) console.log = () => null;
+    
+        LogBox.ignoreAllLogs();
+    
         this.checkPermission();
-
-        //Create notification listener
         this.createNotificationListeners();
-
-        //subscribe to global store
-
-        this.unsubscribe = globalStore.subscribe(this.checkForUpdates)
-
+    
+        this.unsubscribe = globalStore.subscribe(this.checkForUpdates);
     }
+    
+
 
     updateFromStore = (app_link, is_forced = false) => {
         if (app_link !== undefined && app_link !== null && app_link.trim().length !== null) {
@@ -428,21 +415,27 @@ export default class App extends React.Component {
 
 
     render() {
-        return (
-            <Provider store={globalStore}>
-                <StatusBar backgroundColor={EDColors.primary} barStyle={'light-content'} />
-                <BASE_NAVIGATOR
-                    ref={navigatorRef => {
-                        NavigationService.setTopLevelNavigator(navigatorRef);
-                    }}
-                    screenProps={{
-                        notificationSlug: this.isNotification, // Can still pass it even if undefined
-                        isRefresh: this.state.key,
-                    }}
-                />
-                <EDCustomAlert />
-            </Provider>
-        );
+        try {
+            return (
+                <Provider store={globalStore}>
+                    <StatusBar backgroundColor={EDColors.primary} barStyle={'light-content'} />
+                    <BASE_NAVIGATOR
+                        ref={(navigatorRef) => {
+                            NavigationService.setTopLevelNavigator(navigatorRef);
+                        }}
+                        screenProps={{
+                            notificationSlug: this.isNotification,
+                            isRefresh: this.state.key,
+                        }}
+                    />
+                    <EDCustomAlert />
+                </Provider>
+            );
+        } catch (error) {
+            console.error("Render Error:", error);
+            return <View><Text>Something went wrong</Text></View>;
+        }
     }
-    
+
+
 }

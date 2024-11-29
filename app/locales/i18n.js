@@ -1,68 +1,99 @@
 import { default as i18n, default as I18n } from "i18n-js";
-import memoize from "lodash.memoize"; // Use for caching/memoize for better performance
+import memoize from "lodash.memoize";
 import { getSavedTranslation } from "../utils/AsyncStorageHelper";
 import { debugLog } from "../utils/EDConstants";
 
 const getLocalTranslations = {
-  // lazy requires (metro bundler does not support symlinks)
-
   en: () => require("../locales/en_new.json"),
   fr: () => require("../locales/fr_new.json"),
   ar: () => require("../locales/ar_new.json"),
 };
 
 export const getServerTranslations = async (lan) => {
-  // lazy requires (metro bundler does not support symlinks)
-
   let temp = undefined;
+  console.log("Fetching server translations for language:", lan);
 
-  await getSavedTranslation(
-    (value) => {
-      if (value !== undefined && value !== null && value !== 0) {
-        JSON.parse(value).map((data) => {
-          if (data.key === lan) {
+  try {
+    await getSavedTranslation(
+      (value) => {
+        console.log("Retrieved saved translations from storage:", value);
+        if (value) {
+          const translations = JSON.parse(value);
+          const data = translations.find((item) => item.key === lan);
+          if (data) {
             temp = data;
+            console.log("Server translations found:", data);
           }
-        });
-      }
-    },
-    (err) => {}
-  );
+        }
+      },
+      (err) => console.error("Error fetching saved translation:", err)
+    );
+  } catch (error) {
+    console.error("Error in getServerTranslations:", error);
+  }
 
+  console.log("Server translations result:", temp);
   return temp;
 };
 
 export const strings = memoize(
-  (key, config) => i18n.t(key, config),
+  (key, config) => {
+    console.log("Accessing translation for key:", key, "with config:", config);
+    return i18n.t(key, config);
+  },
   (key, config) => (config ? key + JSON.stringify(config) : key)
 );
 
 export const isRTLCheck = () => {
-  return I18n.currentLocale().indexOf("ar") === 0;
+  try {
+    console.log("Checking RTL status. Current locale:", i18n.locale);
+    if (i18n.locale) {
+      return i18n.locale.indexOf("ar") === 0;
+    }
+    console.warn("i18n.locale is undefined");
+    return false;
+  } catch (error) {
+    console.error("Error in isRTLCheck:", error);
+    return false;
+  }
 };
 
-export const setI18nConfig = (lan) => {
-  // clear translation cache
+export const setI18nConfig = async (lan) => {
   strings.cache.clear();
+  console.log("Initializing i18n with language:", lan);
 
-  // set i18n-js config
-  const languageTag =
-    lan !== undefined && lan !== null && lan !== ""
-      ? lan
-      : I18n.currentLocale();
+  let languageTag =
+    lan || I18n.locale || (i18n.currentLocale && i18n.currentLocale()) || "en";
 
-  i18n.translations = { [languageTag]: getLocalTranslations[languageTag]() };
+  console.log("Resolved languageTag:", languageTag);
 
-  getServerTranslations(languageTag).then((value) => {
-    if (value !== undefined && value !== null)
-      i18n.translations = {
-        [languageTag]: value,
-      };
-    else
-      i18n.translations = {
-        [languageTag]: getLocalTranslations[languageTag](),
-      };
-  });
+  try {
+    i18n.translations = {
+      [languageTag]: getLocalTranslations[languageTag]
+        ? getLocalTranslations[languageTag]()
+        : getLocalTranslations["en"](),
+    };
 
-  i18n.locale = languageTag;
+    console.log("Initial local translations set for languageTag:", languageTag);
+    console.log("i18n.translations after local set:", i18n.translations);
+
+    const serverTranslations = await getServerTranslations(languageTag);
+    if (serverTranslations) {
+      i18n.translations[languageTag] = serverTranslations;
+      console.log(
+        "Server translations overridden for languageTag:",
+        languageTag,
+        "i18n.translations:",
+        i18n.translations
+      );
+    }
+
+    i18n.locale = languageTag;
+    i18n.fallbacks = true;
+
+    console.log("i18n configuration completed. Final locale:", i18n.locale);
+    console.log("Final i18n.translations:", i18n.translations);
+  } catch (error) {
+    console.error("Error in setI18nConfig:", error);
+  }
 };
