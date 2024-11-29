@@ -1,11 +1,8 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import metrics from "../utils/metrics";
-import SideBar from "./SideBar";
-
-// Import your screens
+import deviceInfoModule from "react-native-device-info";
+import { createAppContainer, withNavigation } from "react-navigation";
+import { createDrawerNavigator } from 'react-navigation-drawer';
+import { createStackNavigator } from 'react-navigation-stack';
 import AboutStoreContainer from "../containers/AboutStoreContainer";
 import AddressListContainer from "../containers/AddressListContainer";
 import AddressMapContainer from "../containers/AddressMapContainer";
@@ -17,7 +14,7 @@ import ChangePasswordContainer from "../containers/ChangePasswordContainer";
 import CheckOutContainer from "../containers/CheckOutContainer";
 import CMSContainer from "../containers/CMSContainer";
 import ContactUsContainer from "../containers/ContactUsContainer";
-import DetailedAddressListContainer from "../containers/DetailedAddressListContainer";
+import DetailedAddressListContainer from '../containers/DetailedAddressListContainer';
 import EventBookContainer from "../containers/EventBookContainer";
 import FAQsContainer from "../containers/FAQsContainer";
 import FilterContainer from "../containers/FilterContainer";
@@ -47,118 +44,390 @@ import StripePaymentContainer from "../containers/StripePaymentContainer";
 import TrackOrderContainer from "../containers/TrackOrderContainer";
 import VacationContainer from "../containers/VacationContainer";
 import LaundryContainer from "../containers/LaundryContainer";
+import metrics from "../utils/metrics";
+import SideBar from "./SideBar";
 
-// Create stack and drawer navigators
-const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
+const MAIN_NAVIGATOR = createStackNavigator(
+    {
+        MainContainer: {
+            screen: MainContainer
+        },
+        searchLocation: {
+            screen: SearchLocationContainer
+        },
+        RestaurantContainer: {
+            screen: Restaurant
+        },
+        aboutStore: {
+            screen: AboutStoreContainer
+        },
+        ReviewContainer: {
+            screen: ReviewsContainer
+        },
+        RecipeDetail: {
+            screen: RecipeDetail
+        },
+        ProfileContainer: {
+            screen: ProfileContainer
+        },
+        ChangePasswordContainer: {
+            screen: ChangePasswordContainer
+        },
+        Filter: {
+            screen: FilterContainer
+        },
+        CartContainer: {
+            screen: CartContainer
+        },
+        PromoCodeContainer: {
+            screen: PromoCode
+        },
+        AddressListContainer: {
+            screen: AddressListContainer
+        },
+        OTPVerificationFromAddressList: {
+            screen: OTPVerification
+        },
+        AddressMapContainer: {
+            screen: AddressMapContainer
+        },
+        DetailedAddressListContainer: {
+            screen: DetailedAddressListContainer
+        },
+        PaymentGatewayContainer: {
+            screen: PaymentGatewayContainer
+        },
+        CheckOutContainer: {
+            screen: CheckOutContainer
+        },
+        OrderConfirm: {
+            screen: OrderConfirm
+        },
+        SplashContainer: {
+            screen: SplashContainer
+        },
+        LoginContainer: {
+            screen: LoginContainer
+        },
+        CategoryDetailContainer: {
+            screen: CategoryDetailContainer
+        },
 
-// Main Navigator
-const MAIN_NAVIGATOR = () => (
-  <Stack.Navigator initialRouteName="MainContainer" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MainContainer" component={MainContainer} />
-    <Stack.Screen name="SearchLocation" component={SearchLocationContainer} />
-    <Stack.Screen name="RestaurantContainer" component={Restaurant} />
-    <Stack.Screen name="AboutStore" component={AboutStoreContainer} />
-    <Stack.Screen name="Reviews" component={ReviewsContainer} />
-    <Stack.Screen name="RecipeDetail" component={RecipeDetail} />
-    <Stack.Screen name="Profile" component={ProfileContainer} />
-    <Stack.Screen name="ChangePassword" component={ChangePasswordContainer} />
-    <Stack.Screen name="Filter" component={FilterContainer} />
-    <Stack.Screen name="Cart" component={CartContainer} />
-    <Stack.Screen name="PromoCode" component={PromoCode} />
-    <Stack.Screen name="AddressList" component={AddressListContainer} />
-    <Stack.Screen name="OTPVerification" component={OTPVerification} />
-    <Stack.Screen name="AddressMap" component={AddressMapContainer} />
-    <Stack.Screen name="DetailedAddressList" component={DetailedAddressListContainer} />
-    <Stack.Screen name="PaymentGateway" component={PaymentGatewayContainer} />
-    <Stack.Screen name="CheckOut" component={CheckOutContainer} />
-    <Stack.Screen name="OrderConfirm" component={OrderConfirm} />
-  </Stack.Navigator>
+        
+        savedCards: {
+            screen: SavedCardsContainer
+        },
+        StripePaymentContainer: {
+            screen: StripePaymentContainer
+        },
+    },
+    {
+        initialRouteName: "MainContainer",
+        headerMode: "none"
+    }
 );
 
-// Recipe Navigator
-const RECIPE_NAVIGATOR = () => (
-  <Stack.Navigator initialRouteName="RecipeContainer" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="RecipeContainer" component={RecipeContainer} />
-    <Stack.Screen name="CategoryDetail" component={CategoryDetailContainer} />
-  </Stack.Navigator>
+const RECIPE_NAVIGATOR = createStackNavigator(
+    {
+        RecipeContainer: {
+            screen: RecipeContainer
+        },
+        CategoryFromRecipe: {
+            screen: CategoryDetailContainer
+        },
+        FilterContainer: {
+            screen: Restaurant
+        },
+        aboutStore: {
+            screen: AboutStoreContainer
+        },
+        RecipeDetail: {
+            screen: RecipeDetail
+        },
+        Filter: {
+            screen: FilterContainer
+        }
+    },
+    {
+        initialRouteName: "RecipeContainer",
+        headerMode: "none"
+    }
 );
 
-// Event Navigator
-const EVENT_NAVIGATOR = () => (
-  <Stack.Navigator initialRouteName="BookingAvailability" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="BookingAvailability" component={BookingAvailabilityContainer} />
-    <Stack.Screen name="EventBook" component={EventBookContainer} />
-    <Stack.Screen name="BookingSuccess" component={BookingSuccessContainer} />
-  </Stack.Navigator>
+const EVENT_NAVIGATOR = createStackNavigator(
+    {
+        EventContainer: {
+            screen: BookingAvailabilityContainer
+        },
+        searchLocation: {
+            screen: SearchLocationContainer
+        },
+       EventBookContainer : {
+            screen: EventBookContainer
+        },
+        aboutStore: {
+            screen: AboutStoreContainer
+        },
+        ReviewContainer: {
+            screen: ReviewsContainer
+        },
+        BookingSuccess: {
+            screen: BookingSuccessContainer
+        }
+    },
+    {
+        initialRouteName: "EventContainer",
+        headerMode: "none"
+    }
 );
 
-// My Booking Navigator
-const MY_BOOKING_NAVIGATOR = () => (
-  <Stack.Navigator initialRouteName="MyBookingContainer" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MyBookingContainer" component={MyBookingContainer} />
-  </Stack.Navigator>
+const MY_BOOKING_NAVIGATOR = createStackNavigator(
+    {
+        MyBookingContainer: {
+            screen: MyBookingContainer
+        },
+
+        SplashContainer: {
+            screen: SplashContainer
+        }
+    },
+    {
+        initialRouteName: "MyBookingContainer",
+        headerMode: "none"
+    }
 );
 
-// My Order Navigator
-const MY_ORDER_NAVIGATOR = () => (
-  <Stack.Navigator initialRouteName="MyOrderContainer" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MyOrderContainer" component={MyOrderContainer} />
-    <Stack.Screen name="TrackOrder" component={TrackOrderContainer} />
-    <Stack.Screen name="OrderDetail" component={OrderDetailContainer} />
-  </Stack.Navigator>
+const MY_ORDER_NAVIGATOR = createStackNavigator(
+    {
+        MyOrderContainer: {
+            screen: MyOrderContainer
+        },
+        TrackOrderContainer: {
+            screen: TrackOrderContainer
+        },
+        ProfileContainer: {
+            screen: ProfileContainer
+        },
+        savedCards: {
+            screen: SavedCardsContainer
+        },
+        AddressListContainer: {
+            screen: AddressListContainer
+        },
+        OTPVerificationFromAddressList: {
+            screen: OTPVerification
+        },
+        DetailedAddressListContainer: {
+            screen: DetailedAddressListContainer
+        },
+        AddressMapContainer: {
+            screen: AddressMapContainer
+        },
+        OrderDetailContainer: {
+            screen: OrderDetailContainer
+        },
+        StripePaymentContainer: {
+            screen: StripePaymentContainer
+        },
+        PaymentGatewayContainer: {
+            screen: PaymentGatewayContainer
+        },
+        RestaurantContainer: {
+            screen: Restaurant
+        },
+        aboutStore: {
+            screen: AboutStoreContainer
+        },
+        CategoryDetailContainer: {
+            screen: CategoryDetailContainer
+        },
+        CartContainer: {
+            screen: CartContainer
+        },
+        CheckOutContainer: {
+            screen: CheckOutContainer
+        }
+
+    },
+    {
+        initialRouteName: "MyOrderContainer",
+        headerMode: "none"
+    }
 );
 
-// Notification Navigator
-const NOTIFICATION_NAVIGATOR = () => (
-  <Stack.Navigator initialRouteName="NotificationList" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="NotificationList" component={NotificationList} />
-  </Stack.Navigator>
+
+const NOTIFICATION_NAVIGATOR = createStackNavigator(
+    {
+        NotificationContainer: {
+            screen: NotificationList
+        }
+    },
+    {
+        initialRouteName: "NotificationContainer",
+        headerMode: "none"
+    }
 );
 
-// Wallet Navigator
-const WALLET_NAVIGATOR = () => (
-  <Stack.Navigator initialRouteName="MyWalletContainer" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="MyWalletContainer" component={MyWalletContainer} />
-    <Stack.Screen name="SavedCards" component={SavedCardsContainer} />
-  </Stack.Navigator>
+
+
+export const WALLET_NAVIGATOR = createStackNavigator({
+    myWalletContainer: {
+        screen: MyWalletContainer
+    },
+    savedCards: {
+        screen: SavedCardsContainer
+    },
+    StripePaymentContainer: {
+        screen: StripePaymentContainer
+    },
+}, {
+    initialRouteName: "myWalletContainer",
+    headerMode: "none"
+})
+
+
+export const HOME_SCREEN_DRAWER = createDrawerNavigator(
+    {
+        Home: {
+            screen: MAIN_NAVIGATOR
+        },
+        Wallet: {
+            screen: WALLET_NAVIGATOR
+        },
+        Recipe: {
+            screen: RECIPE_NAVIGATOR
+        },
+        Vacation: {
+            screen: VacationContainer
+        },
+        Laundry: {
+            screen: LaundryContainer
+        },
+        Event: {
+            screen: EVENT_NAVIGATOR
+        },
+        MyBooking: {
+            screen: MY_BOOKING_NAVIGATOR
+        },
+        Notification: {
+            screen: NOTIFICATION_NAVIGATOR
+        },
+        Order: {
+            screen: MY_ORDER_NAVIGATOR
+        },
+        CMSContainer: {
+            screen: CMSContainer
+        },
+        contactUs: {
+            screen: ContactUsContainer
+        },
+        FAQs: {
+            screen: FAQsContainer
+        },
+
+    },
+    {
+        initialRouteName: "Home",
+        initialRouteParams: "Home",
+        drawerLockMode: "locked-closed",
+        drawerWidth: metrics.screenWidth * .66,
+        contentComponent: props => <SideBar {...props} />
+    }
 );
 
-// Home Drawer Navigator
-const HOME_SCREEN_DRAWER = () => (
-  <Drawer.Navigator
-    initialRouteName="Home"
-    drawerContent={(props) => <SideBar {...props} />}
-    screenOptions={{ drawerStyle: { width: metrics.screenWidth * 0.66 } }}
-  >
-    <Drawer.Screen name="Main" component={MAIN_NAVIGATOR} />
-    <Drawer.Screen name="Wallet" component={WALLET_NAVIGATOR} />
-    <Drawer.Screen name="Recipe" component={RECIPE_NAVIGATOR} />
-    <Drawer.Screen name="Event" component={EVENT_NAVIGATOR} />
-    <Drawer.Screen name="MyBooking" component={MY_BOOKING_NAVIGATOR} />
-    <Drawer.Screen name="Notifications" component={NOTIFICATION_NAVIGATOR} />
-    <Drawer.Screen name="Orders" component={MY_ORDER_NAVIGATOR} />
-    <Drawer.Screen name="CMS" component={CMSContainer} />
-    <Drawer.Screen name="ContactUs" component={ContactUsContainer} />
-    <Drawer.Screen name="FAQs" component={FAQsContainer} />
-  </Drawer.Navigator>
+export const HOME_SCREEN_RIGHT_DRAWER = createDrawerNavigator(
+    {
+        Home: {
+            screen: MAIN_NAVIGATOR
+        },
+        Wallet: {
+            screen: WALLET_NAVIGATOR
+        },
+        Recipe: {
+            screen: RECIPE_NAVIGATOR
+        },
+        Vacation: {
+            screen: VacationContainer
+        },
+        Laundry: {
+            screen: LaundryContainer
+        },
+        Event: {
+            screen: EVENT_NAVIGATOR
+        },
+        MyBooking: {
+            screen: MY_BOOKING_NAVIGATOR
+        },
+        Notification: {
+            screen: NOTIFICATION_NAVIGATOR
+        },
+        Order: {
+            screen: MY_ORDER_NAVIGATOR
+        },
+        CMSContainer: {
+            screen: CMSContainer
+        },
+        contactUs: {
+            screen: ContactUsContainer
+        },
+        FAQs: {
+            screen: FAQsContainer
+        }
+    },
+    {
+        initialRouteName: "Home",
+        initialRouteParams: "Home",
+        drawerLockMode: "locked-closed",
+        drawerPosition: 'right',
+        drawerWidth: metrics.screenWidth * .66,
+        contentComponent: props => <SideBar {...props} />
+    }
 );
 
-// Base Stack Navigator
-const BASE_STACK_NAVIGATOR = () => (
-  <Stack.Navigator initialRouteName="SplashContainer" screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="SplashContainer" component={SplashContainer} />
-    <Stack.Screen name="Login" component={LoginContainer} />
-    <Stack.Screen name="Signup" component={SignupContainer} />
-    <Stack.Screen name="Home" component={HOME_SCREEN_DRAWER} />
-  </Stack.Navigator>
+export const BASE_STACK_NAVIGATOR = createStackNavigator(
+    {
+
+        SplashContainer: {
+            screen: SplashContainer
+        },
+        LoginContainer: {
+            screen: LoginContainer
+        },
+        SignupContainer: {
+            screen: SignupContainer
+        },
+        CMSFromRegister: {
+            screen: CMSContainer
+        },
+        CMSContainer: {
+            screen: CMSContainer
+        },
+        contactUs: {
+            screen: ContactUsContainer
+        },
+        MainContainer: {
+            screen: HOME_SCREEN_DRAWER
+        },
+        MainContainer_Right: {
+            screen: HOME_SCREEN_RIGHT_DRAWER
+        },
+        MY_ORDER_NAVIGATOR: {
+            screen: MyOrderContainer
+        },
+        PhoneNumberInput: {
+            screen: PhoneNumberInput
+        },
+        OTPVerification: {
+            screen: OTPVerification
+        },
+        PasswordRecovery: {
+            screen: PasswordRecoveryContainer
+        }
+    },
+    {
+        initialRouteName: "SplashContainer",
+        headerMode: "none"
+    }
 );
 
-// Base Navigator
-const BASE_NAVIGATOR = () => (
-  <NavigationContainer>
-    <BASE_STACK_NAVIGATOR />
-  </NavigationContainer>
-);
-
-export default BASE_NAVIGATOR;
+export const BASE_NAVIGATOR = createAppContainer(withNavigation(BASE_STACK_NAVIGATOR));
