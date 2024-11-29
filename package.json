@@ -45,7 +45,7 @@
     "native-base": "^3.4.28",
     "patch-package": "^8.0.0",
     "react": "18.3.1",
-    "react-native": "0.73.6",
+    "react-native": "0.75.2",
     "react-native-android-location-enabler": "^2.0.1",
     "react-native-autoheight-webview": "^1.6.5",
     "react-native-autolink": "^4.2.0",

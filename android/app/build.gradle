@@ -77,6 +77,9 @@ dependencies {
     // React Native dependency
     implementation("com.facebook.react:react-android")
 
+    implementation 'com.facebook.soloader:soloader:0.10.5'
+
+
     // JavaScript Engine
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
