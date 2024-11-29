@@ -83,7 +83,7 @@
     "react-native-paystack-webview": "^4.3.1",
     "react-native-permissions": "^5.2.0",
     "react-native-qrcode-scanner": "^1.5.5",
-    "react-native-reanimated": "^3.6.2",
+    "react-native-reanimated": "^3.16.3",
     "react-native-responsive-fontsize": "^0.5.1",
     "react-native-responsive-screen": "^1.4.2",
     "react-native-restart": "0.0.27",
