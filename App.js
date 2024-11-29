@@ -4,7 +4,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 // import firebase from "react-native-firebase";
 import { firebase } from '@react-native-firebase/app';
 import messaging from '@react-native-firebase/messaging';
-import I18n from 'i18n-js';
+import i18n from 'i18n-js';
 import React from "react";
 import { AppState, Linking, LogBox, Platform, StatusBar, Text, TextInput, View } from 'react-native';
 import deviceInfoModule from 'react-native-device-info';
@@ -14,6 +14,7 @@ import { Provider } from "react-redux";
 import { combineReducers, createStore } from "redux";
 import EDCustomAlert from './app/components/EDCustomAlert';
 import { BASE_NAVIGATOR } from "./app/components/RootNavigator";
+
 import { setI18nConfig, strings } from "./app/locales/i18n";
 import { saveAlertData, savePromptStatus, saveWalletMoneyInRedux } from "./app/redux/actions/User";
 import { checkoutDetailOperation } from "./app/redux/reducers/CheckoutReducer";
@@ -39,7 +40,6 @@ const rootReducer = combineReducers({
 });
 
 export const globalStore = createStore(rootReducer);
-
 
 
 // Handle JS exceptions
@@ -430,9 +430,14 @@ export default class App extends React.Component {
     
     render() {
         try {
+            if (!BASE_NAVIGATOR) {
+                console.error("BASE_NAVIGATOR is undefined");
+                return <Text>Navigation not loaded</Text>;
+            }
+    
             return (
                 <Provider store={globalStore}>
-                    <StatusBar backgroundColor={EDColors.primary} barStyle={'light-content'} />
+                    <StatusBar backgroundColor={EDColors.primary} barStyle="light-content" />
                     <BASE_NAVIGATOR
                         ref={(navigatorRef) => {
                             NavigationService.setTopLevelNavigator(navigatorRef);
@@ -447,9 +452,10 @@ export default class App extends React.Component {
             );
         } catch (error) {
             console.error("Render Error:", error);
-            return <View><Text>Something went wrong</Text></View>;
+            return <Text>Something went wrong</Text>;
         }
     }
+    
 
 
 }
