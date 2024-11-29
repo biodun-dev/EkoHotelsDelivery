@@ -93,6 +93,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging' // For Firebase Cloud Messaging
     implementation 'com.google.firebase:firebase-analytics' // Optional: For Analytics
      implementation 'com.google.firebase:firebase-crashlytics:18.4.0'
+     
+     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
 
     // For multiDex support
     implementation 'androidx.multidex:multidex:2.0.1'

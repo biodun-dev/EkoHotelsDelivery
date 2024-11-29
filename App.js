@@ -1,10 +1,4 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import crashlytics from '@react-native-firebase/crashlytics';
 // import firebase from "react-native-firebase";
@@ -313,6 +307,7 @@ export default class App extends React.Component {
     }
 
     async componentDidMount() {
+        console.log('Initial isNotification:', this.isNotification);
         AppState.addEventListener('change', this._handleAppStateChange);
         await this.saveLanguage()
         setTimeout(() => {
@@ -433,25 +428,21 @@ export default class App extends React.Component {
 
 
     render() {
-
         return (
-          
             <Provider store={globalStore}>
-                <StatusBar backgroundColor={EDColors.primary} barStyle={'light-content'}/>
-                {this.isNotification !== undefined ?
-                    <>
-                        <BASE_NAVIGATOR
-                            ref={navigatorRef => {
-                                NavigationService.setTopLevelNavigator(navigatorRef);
-                            }}
-                            screenProps={
-                                { notificationSlug: this.isNotification, isRefresh: this.state.key }
-                            }
-                        />
-                        <EDCustomAlert />
-                    </>
-                    : <View />}
+                <StatusBar backgroundColor={EDColors.primary} barStyle={'light-content'} />
+                <BASE_NAVIGATOR
+                    ref={navigatorRef => {
+                        NavigationService.setTopLevelNavigator(navigatorRef);
+                    }}
+                    screenProps={{
+                        notificationSlug: this.isNotification, // Can still pass it even if undefined
+                        isRefresh: this.state.key,
+                    }}
+                />
+                <EDCustomAlert />
             </Provider>
         );
     }
+    
 }

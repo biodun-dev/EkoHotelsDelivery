@@ -12,6 +12,9 @@ import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import com.google.firebase.FirebaseApp
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
+import com.facebook.react.ReactPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -20,6 +23,7 @@ class MainApplication : Application(), ReactApplication {
             override fun getPackages(): List<ReactPackage> =
                 PackageList(this).packages.apply {
                     // Add any manually linked packages here, if required
+                    // Example: add(YourCustomPackage())
                 }
 
             override fun getJSMainModuleName(): String = "index"
@@ -47,7 +51,11 @@ class MainApplication : Application(), ReactApplication {
         // Initialize Firebase
         FirebaseApp.initializeApp(this)
 
-        // Enable Crashlytics in development for testing
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+        // Enable Crashlytics (conditionally disable in debug mode)
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+
+        // Initialize Facebook SDK
+        FacebookSdk.sdkInitialize(applicationContext)
+        AppEventsLogger.activateApp(this)
     }
 }
