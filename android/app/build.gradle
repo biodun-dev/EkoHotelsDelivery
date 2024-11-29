@@ -2,6 +2,8 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply plugin: 'com.google.gms.google-services' // Firebase plugin
+apply plugin: 'com.google.firebase.crashlytics'
+
 
 // React Native Gradle Plugin Configuration
 react {
@@ -62,6 +64,10 @@ android {
              //  signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+             firebaseCrashlytics {
+            nativeSymbolUploadEnabled true
+            unstrippedNativeLibsDir 'src/main/jniLibs'
+        }
         }
     }
 }
@@ -85,8 +91,8 @@ dependencies {
 
     // Firebase Modules
     implementation 'com.google.firebase:firebase-messaging' // For Firebase Cloud Messaging
-    implementation 'com.google.firebase:firebase-crashlytics' // For Crashlytics
     implementation 'com.google.firebase:firebase-analytics' // Optional: For Analytics
+     implementation 'com.google.firebase:firebase-crashlytics:18.4.0'
 
     // For multiDex support
     implementation 'androidx.multidex:multidex:2.0.1'
