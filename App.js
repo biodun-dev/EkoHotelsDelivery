@@ -1,8 +1,10 @@
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import crashlytics from '@react-native-firebase/crashlytics';
-import messaging from '@react-native-firebase/messaging';
+// import firebase from "react-native-firebase";
 import { firebase } from '@react-native-firebase/app';
-import i18n from 'i18n-js';
+import messaging from '@react-native-firebase/messaging';
+import I18n from 'i18n-js';
 import React from "react";
 import { AppState, Linking, LogBox, Platform, StatusBar, Text, TextInput, View } from 'react-native';
 import deviceInfoModule from 'react-native-device-info';
@@ -29,7 +31,7 @@ import {
 
     ORDER_TYPE
 } from "./app/utils/EDConstants";
-import NavigationService from "./NavigationService.js";
+import NavigationService from "./NavigationService";
 const rootReducer = combineReducers({
     userOperations: userOperations,
     navigationReducer: navigationOperation,
@@ -39,6 +41,8 @@ const rootReducer = combineReducers({
 export const globalStore = createStore(rootReducer);
 
 
+
+// Handle JS exceptions
 const exceptionhandler = (error, isFatal) => {
     if (error && error.stack) {
         console.error("JS ERROR ::::", error);
@@ -52,17 +56,14 @@ const exceptionhandler = (error, isFatal) => {
         crashlytics().recordError(error);
     }
 };
-
-
 setJSExceptionHandler(exceptionhandler, true);
 
+// Handle native exceptions
 setNativeExceptionHandler(exceptionString => {
     showDialogue(strings("exceptionMsg"))
     crashlytics().log(exceptionString)
     crashlytics().recordError(exceptionString)
 });
-
-
 if (!firebase.apps.length) {
     firebase.initializeApp();
 }
@@ -106,6 +107,10 @@ export default class App extends React.Component {
     }
 
     async createNotificationListeners() {
+
+        //   /*
+        //    * Triggered when a particular notification has been received in foreground
+        //    * */
         messaging().onMessage(async remoteMessage => {
             let currentRoute = NavigationService.getCurrentRoute().routeName
             debugLog("CURRENT ROUTE ::::", NavigationService.getCurrentRoute())
@@ -159,6 +164,9 @@ export default class App extends React.Component {
             debugLog("Foreground message ::::::", remoteMessage)
         });
 
+        //   /*
+        //    * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
+        //    * */
         this.messageListener = messaging().onNotificationOpenedApp(remoteMessage => {
             let currentRoute = NavigationService.getCurrentRoute().routeName
             debugLog(
@@ -212,6 +220,9 @@ export default class App extends React.Component {
             }
         });
 
+        /*
+         * Triggered when a particular notification has been received in killed state
+         * */
 
         await messaging()
             .getInitialNotification()
@@ -268,72 +279,74 @@ export default class App extends React.Component {
         this.setState({ appState: nextAppState });
     }
 
+
+    /** //#region 
+     * GET LANGAGE FROM ASYNC AND SAVE IN REDUX
+     */
     async saveLanguage() {
         await getLanguage(
-            async (success) => {
-                let lan = success;
-                if (lan) {
-                    i18n.locale = lan;
-                    await setI18nConfig(lan); // Ensure translations are set
+            success => {
+                let lan = I18n.currentLocale()
+                if (success != null && success != undefined) {
+                    lan = success
+                    I18n.locale = success;
+                    setI18nConfig(lan)
                 } else {
-                    lan = "en";
-                    i18n.locale = "en";
-                    await setI18nConfig("en"); // Default to English
+                    lan = "en"
+                    I18n.locale = "en";
+                    setI18nConfig("en")
+
                 }
-            },
-            (failure) => {
-                console.error("Error fetching saved language:", failure);
+            }, failure => {
+
             }
-        );
+        )
     }
-    
     //#endregion
     componentWillUnmount() {
         AppState.removeEventListener('change', this._handleAppStateChange);
     }
 
     async componentDidMount() {
-        console.log("Initial isNotification:", this.isNotification);
-        AppState.addEventListener("change", this._handleAppStateChange);
-    
-        try {
-            // Ensure default language setup
-            await setI18nConfig();
-            console.log(`Locale initialized to: ${i18n.locale}`);
-        } catch (error) {
-            console.error("Error initializing i18n config:", error);
-        }
-    
+        AppState.addEventListener('change', this._handleAppStateChange);
+        await this.saveLanguage()
         setTimeout(() => {
-            globalStore.dispatch(savePromptStatus(false));
-        }, 2000);
-    
+            globalStore.dispatch(
+                savePromptStatus(false)
+            )
+        }, 2000)
         this.createNotificationListeners();
-    
-        if (Platform.OS === "ios") {
+        if (Platform.OS === 'ios') {
             KeyboardManager.setEnable(true);
             KeyboardManager.setEnableDebugging(false);
             KeyboardManager.setKeyboardDistanceFromTextField(20);
             KeyboardManager.setEnableAutoToolbar(true);
-            KeyboardManager.setToolbarDoneBarButtonItemText("Done");
+            KeyboardManager.setToolbarDoneBarButtonItemText('Done');
             KeyboardManager.setToolbarPreviousNextButtonEnable(true);
             KeyboardManager.setShouldToolbarUsesTextFieldTintColor(true);
             KeyboardManager.setShouldShowToolbarPlaceholder(true);
             KeyboardManager.setOverrideKeyboardAppearance(true);
             KeyboardManager.setShouldResignOnTouchOutside(true);
         }
-    
-        if (!__DEV__) console.log = () => null;
-    
-        LogBox.ignoreAllLogs();
-    
-        this.checkPermission();
-        this.createNotificationListeners();
-    
-        this.unsubscribe = globalStore.subscribe(this.checkForUpdates);
-    }
-    
 
+        // Disable console print in release
+        if (!__DEV__)
+            console.log = () => null
+
+        // Disable yellowbox
+        LogBox.ignoreAllLogs()
+
+        // Check firebase permission
+        this.checkPermission();
+
+        //Create notification listener
+        this.createNotificationListeners();
+
+        //subscribe to global store
+
+        this.unsubscribe = globalStore.subscribe(this.checkForUpdates)
+
+    }
 
     updateFromStore = (app_link, is_forced = false) => {
         if (app_link !== undefined && app_link !== null && app_link.trim().length !== null) {
@@ -414,6 +427,7 @@ export default class App extends React.Component {
     }
 
 
+    
     render() {
         try {
             return (
